@@ -1,3 +1,9 @@
-first "add" file(s) by using add option under team
-then "commit" file(s) using commit option under team
-finally "push" in team->remote
+Create project called JBC1 to match this structure.
+
+Put these files in the project folder under the jbdc1 class (not sure how pull
+or clone works)
+
+Then for updating when you make changes use the following steps:
+1. "add" file(s) by using add option under team
+2. "commit" file(s) using commit option under team
+3. "push" changes using push option under team->remote
