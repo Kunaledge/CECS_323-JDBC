@@ -19,6 +19,7 @@ public class JDBC1 {
         //comments for test 2
         //comment for test 3
         //comment for test 4 to confirm that changes are being made per file
+        System.out.println("test4");
     }
     
 }
