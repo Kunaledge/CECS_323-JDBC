@@ -17,6 +17,7 @@ public class JDBC1 {
     public static void main(String[] args) {
         // TODO code application logic here
         //comments for test 2
+        //comment for test 3
     }
     
 }
