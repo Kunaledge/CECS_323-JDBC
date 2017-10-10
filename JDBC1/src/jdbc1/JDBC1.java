@@ -21,6 +21,7 @@ public class JDBC1 {
         //comment for test 4 to confirm that changes are being made per file
         System.out.println("test4");
         System.out.println("test5");
+        System.out.println("test6");
     }
     
 }
