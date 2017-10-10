@@ -1,0 +1,3 @@
+first "add" file by right clicking file in project window
+then "commit" files using commit option under team
+finally "push" in team->remote
