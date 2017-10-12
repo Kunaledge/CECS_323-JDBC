@@ -4,9 +4,13 @@
       /				|			  \
  ListMenu  		    Inserting			Deleting
      |	                   /	     \			    |
-     |	       	     insertBook  InsertPub		    |
+     |	       	     InsertBook  InsertPub		    |
      |			   |	      |			    |
      |			   |	 ReplacePub		    |
      |_____________________|__________|_____________________|
 			         |
 			       Output
+
+
+*We can make functions instead of separate classes for some, such as all three
+classes under Inserting.
