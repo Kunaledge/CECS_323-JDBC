@@ -27,7 +27,7 @@ public class JDBC1 {
     static final String displayFormat="%-5s%-15s%-15s%-15s\n";
 // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.apache.derby.jdbc.ClientDriver";
-    static String DB_URL = "jdbc:derby://localhost:1527/";
+    static String DB_URL = "jdbc:derby://localhost:1527/";    
 //            + "testdb;user=";
 /**
  * Takes the input string and outputs "N/A" if the string is empty or null.
@@ -63,14 +63,23 @@ public class JDBC1 {
 
             //STEP 3: Open a connection
             System.out.println("Connecting to database...");
+            System.out.println("DB_URL = " + DB_URL);
+            
             conn = DriverManager.getConnection(DB_URL);
 
+            
+            
+            
+            
+            
+            
+            
             //STEP 4: Execute a query
             System.out.println("Creating statement...");
-            stmt = conn.createStatement();
+            stmt = conn.createStatement(); /////what is happening here???
             String sql;
             sql = "SELECT au_id, au_fname, au_lname, phone FROM Authors";
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(sql); //////executing sql, sends results to rs
 
             //STEP 5: Extract data from result set
             System.out.printf(displayFormat, "ID", "First Name", "Last Name", "Phone #");
@@ -85,6 +94,14 @@ public class JDBC1 {
                 System.out.printf(displayFormat,
                         dispNull(id), dispNull(first), dispNull(last), dispNull(phone));
             }
+            
+            
+            
+            
+            
+            
+            
+            
             //STEP 6: Clean-up environment
             rs.close();
             stmt.close();

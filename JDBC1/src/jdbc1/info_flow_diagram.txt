@@ -1,0 +1,12 @@
+			 StartConnection
+				|
+       ______________________MainMenu_____________________
+      /				|			  \
+ ListMenu  		    Inserting			Deleting
+     |	                   /	     \			    |
+     |	       	     insertBook  InsertPub		    |
+     |			   |	      |			    |
+     |			   |	 ReplacePub		    |
+     |_____________________|__________|_____________________|
+			         |
+			       Output
