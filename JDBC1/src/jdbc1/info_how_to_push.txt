@@ -8,3 +8,5 @@ Then for updating when you make changes use the following steps:
 2. "commit" file(s) using commit option under team
 3. "push" changes using push option (or push upstream for single click action) 
     under team->remote
+    
+    edit to test
