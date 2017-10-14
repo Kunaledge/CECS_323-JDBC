@@ -1,16 +1,10 @@
-			 StartConnection
+                              JDBC1
 				|
-       ______________________MainMenu_____________________
-      /				|			  \
- ListMenu  		    Inserting			Deleting
-     |	                   /	     \			    |
-     |	       	     InsertBook  InsertPub		    |
-     |			   |	      |			    |
-     |			   |	 ReplacePub		    |
-     |_____________________|__________|_____________________|
-			         |
-			       Output
+       ______________________Database______________________
+      /				|                          \
+    List                     Insert			 Remove
+     |__________________________|___________________________|
+			        |
+			     Output
 
 
-*We can make functions instead of separate classes for some, such as all three
-classes under Inserting.
