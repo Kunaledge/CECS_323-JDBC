@@ -14,19 +14,29 @@ import java.sql.SQLException;
  */
 public class Remove 
 {
-    public void selectBook(Database dbin)
+    public void selectBook(Database dbin) throws SQLException
     {
-        try
+        System.out.print("Enter book title: ");
+        dbin.bookTitle = dbin.scan.nextLine();
+        
+        System.out.print("Enter writing group: ");
+        dbin.groupName = dbin.scan.nextLine();
+        
+        String PK = "bookTitle = '" + dbin.bookTitle + "' AND groupName = '"
+                + dbin.groupName + '\'';
+        
+        if (!dbin.isPK(dbin, "Books", PK))
         {
-        //STEP 4: Executing a query example
-        System.out.println("Creating statement...");
-        dbin.stmt = dbin.conn.createStatement(); /////creates statement object
-        dbin.sql = "SELECT au_id, au_fname, au_lname, phone FROM Authors";
-        dbin.rs = dbin.stmt.executeQuery(dbin.sql); //////executing sql, sends results to rs
-        } catch (SQLException se)
-        {
-            //Handle errors for JDBC
-            se.printStackTrace();
+            System.out.println("Book not found in database. "
+                    + "Check writing group and book title.");
+            
+            return;
         }
+        
+        dbin.sql = "DELETE FROM Books "
+                + "WHERE bookTitle = '" + dbin.bookTitle + "' AND "
+                + "groupName = '" + dbin.groupName + "'";
+        
+        dbin.stmt.executeUpdate(dbin.sql); //////executing sql, sends results to rs
     }
 }

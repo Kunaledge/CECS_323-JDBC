@@ -31,11 +31,11 @@ public class Database
     
     String sql = null;
     
-    String groupName, headWriter, yearFormed, subject;
+    String groupName, headWriter, subject;
     String bookTitle, publisherName, yearPublished;
-    int numberPages;
+    int numberPages, yearFormed;
     String publisherAddress, publisherPhone, publisherEmail;
-    
+    int choice;
     
     //This is the specification for the printout that I'm doing:
     //each % denotes the start of a new field.
@@ -43,7 +43,7 @@ public class Database
     //The number indicates how wide to make the field.
     //The "s" denotes that it's a string.  All of our output in this test are
     //strings, but that won't always be the case.
-    final String displayFormat="%-5s%-15s%-15s%-15s\n";
+    final String displayFormat="%-20s%-20s%-10s%-10s\n";
     // JDBC driver name and database URL
     final String JDBC_DRIVER = "org.apache.derby.jdbc.ClientDriver";
     String DB_URL = "jdbc:derby://localhost:1527/";    
@@ -62,13 +62,18 @@ public class Database
         //Prompt the user for the database name, and the credentials.
         //If your database has no credentials, you can update this code to
         //remove that from the connection string.
-        System.out.print("Name of the database (not the user account): ");
-        DBNAME = scan.nextLine();
-        System.out.print("Database user name: ");
-        USER = scan.nextLine();
-        System.out.print("Database password: ");
-        PASS = scan.nextLine();
+//        System.out.print("Name of the database (not the user account): ");
+//        DBNAME = scan.nextLine();
+//        System.out.print("Database user name: ");
+//        USER = scan.nextLine();
+//        System.out.print("Database password: ");
+//        PASS = scan.nextLine();
         //Constructing the database URL connection string
+        
+        USER = "user1";
+        PASS = "password";
+        DBNAME = "JDBC";
+        
         DB_URL = DB_URL + DBNAME + ";user=" + USER + ";password=" + PASS;
         
         try 
@@ -81,22 +86,90 @@ public class Database
             System.out.println("DB_URL = " + DB_URL);
             
             conn = DriverManager.getConnection(DB_URL);
-            
+            //STEP 4: Executing a query example
+            System.out.println("Creating statement...");
+            stmt = conn.createStatement(); /////creates statement object
             
             
             //what do you want to do now?
             //switch case menu goes here
             
             
+            do
+            {
+                System.out.print("Enter choice:"
+                        + "\n1. Look up"
+                        + "\n2. Add book to database"
+                        + "\n3. Remove book from database"
+                        + "\n ..."
+                        + "\n10.Quit"
+                        + "\nEnter number: ");
+                choice = scan.nextInt();
+                scan.skip("\n"); //prevents following input skipping
+                switch(choice)
+                {
+                    case 1:
+                        int listChoice;
+                        List list = new List();
+                        
+                        do
+                        {
+                            System.out.print("Enter look up choice:"
+                                    + "\n1. All writing groups"
+                                    + "\n2. Group info"
+                                    + "\n3. All publishers"
+                                    + "\n4. All titles"
+                                    + "\n5. Book info"
+                                    + "\n10.Go back"
+                                    + "\nEnter choice: ");
+                            listChoice = scan.nextInt();
+                            System.out.println();
+                            scan.skip("\n");
+
+                            switch(listChoice)
+                            {
+                                case 1:
+                                    list.allWritingGroups(this);
+                                    break;
+                                case 2:
+                                    list.selectGroup(this);
+                                    break;
+                                case 3:
+                                    list.allPublishers(this);
+                                    break;
+                                case 4:
+                                    list.allTitles(this);
+                                    break;
+                                case 5:
+                                    System.out.println("Not ready yet!");
+                            }
+                        } while(listChoice != 10);
+                        break;
+                    case 2: 
+                        Insert ins = new Insert();
+                        ins.book(this);
+                        break;
+                    case 3:
+                        Remove rem = new Remove();
+                        rem.selectBook(this);
+                        break;
+                }
+            
+            } while(choice != 10);
             
             
             
-            Insert ins = new Insert();
-            ins.book(this);
             
-            String sql = "SELECT * FROM Books;";
+            String sql = "SELECT * FROM Books";
             
             rs = stmt.executeQuery(sql);
+            
+            //Display values
+            System.out.printf(displayFormat,
+                    "Group",
+                    "Title",
+                    "Year", 
+                    "Pages");
             
             while (rs.next())
             {
@@ -106,7 +179,6 @@ public class Database
                 yearPublished = rs.getString("yearPublished");
                 numberPages = rs.getInt("numberPages");
                 
-                //Display values
                 System.out.printf(displayFormat, 
                         dispNull(groupName), 
                         dispNull(bookTitle), 
@@ -177,4 +249,27 @@ public class Database
         }//end try
         System.out.println("Goodbye!");
     }
+    
+    public boolean isValueStored(Database dbin, String tableName, 
+            String colName, String valueIn) throws SQLException
+    {
+        sql = "SELECT " + colName + " FROM " + tableName + " WHERE " 
+                + colName + " = '" + valueIn + "'";
+        
+        //System.out.println(sql);
+        
+        rs = stmt.executeQuery(sql);
+        
+        return rs.next();
+    }
+    
+    public boolean isPK(Database dbin, String tableName, String PKstr) throws SQLException
+    {
+        sql = "SELECT * FROM " + tableName + " WHERE " + PKstr;
+        
+        rs = stmt.executeQuery(sql);
+        
+        return rs.next();
+    }
 }
+
