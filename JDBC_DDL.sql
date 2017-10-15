@@ -1,26 +1,26 @@
 CREATE TABLE WritingGroups
 (
-    groupName           VARCHAR(20)     NOT NULL,
-    headWriter          VARCHAR(20),
+    groupName           VARCHAR(50)     NOT NULL,
+    headWriter          VARCHAR(50),
     yearFormed          INT,
-    subject             VARCHAR(20),
+    subject             VARCHAR(50),
     CONSTRAINT  writingGroup_PK PRIMARY KEY(groupName) 
 );
 
 CREATE TABLE Publishers
 (
-    publisherName       VARCHAR(20)     NOT NULL,
+    publisherName       VARCHAR(50)     NOT NULL,
     publisherAddress    VARCHAR(60),
-    publisherPhone      VARCHAR(15),
-    publisherEmail      VARCHAR(20),
+    publisherPhone      VARCHAR(12),
+    publisherEmail      VARCHAR(50),
     CONSTRAINT  publishers_PK PRIMARY KEY(publisherName) 
 );
 
 CREATE TABLE Books
 (
-    bookTitle           VARCHAR(25)     NOT NULL,
-    groupName           VARCHAR(20)     NOT NULL,
-    publisherName       VARCHAR(20)     NOT NULL,
+    bookTitle           VARCHAR(50)     NOT NULL,
+    groupName           VARCHAR(50)     NOT NULL,
+    publisherName       VARCHAR(50)     NOT NULL,
     yearPublished       VARCHAR(4),
     numberPages         INT
 );
