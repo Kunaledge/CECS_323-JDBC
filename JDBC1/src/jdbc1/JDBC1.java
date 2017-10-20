@@ -37,6 +37,7 @@ public class JDBC1
     {
         Database db = new Database();
         db.start();
+        System.out.println("End Program.");
 
     }//end main
 }//end FirstExample}
