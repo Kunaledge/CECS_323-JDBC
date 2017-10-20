@@ -81,33 +81,44 @@ public class Database
         //Prompt the user for the database name, and the credentials.
         //If your database has no credentials, you can update this code to
         //remove that from the connection string.
-//        System.out.print("Name of the database (not the user account): ");
-//        DBNAME = scan.nextLine();
-//        System.out.print("Database user name: ");
-//        USER = scan.nextLine();
-//        System.out.print("Database password: ");
-//        PASS = scan.nextLine();
+        System.out.print("Name of the database (not the user account): ");
+        DBNAME = scan.nextLine();
+        System.out.print("Database user name: ");
+        USER = scan.nextLine();
+        System.out.print("Database password: ");
+        PASS = scan.nextLine();
         //Constructing the database URL connection string
         
-        USER = "user1";
-        PASS = "password";
-        DBNAME = "JDBC";
+//        USER = "user1";
+//        PASS = "password";
+//        DBNAME = "JDBC";
         
         DB_URL = DB_URL + DBNAME + ";user=" + USER + ";password=" + PASS;
         
         //prepared statement strings
         
-        String  sqlListWritingGroup = "SELECT groupname, headwriter, yearformed, subject FROM writinggroups", 
-                sqlListPub = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE groupname = ?",
-                sqlListAllPub = "SELECT publishername, publisheraddress, publisherphone, publisheremail FROM publishers",
-                sqlListAllBook = "SELECT booktitle, groupname, publishername, yearpublished, numberpages FROM books",
-                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE booktitle = ? AND groupname = ?",
+        String  sqlListWritingGroup = "SELECT groupname, headwriter, yearformed, "
+                + "subject FROM writinggroups", 
+                sqlListPub = "SELECT * FROM books NATURAL JOIN publishers "
+                + "NATURAL JOIN writinggroups WHERE groupname = ?",
+                sqlListAllPub = "SELECT publishername, publisheraddress, "
+                + "publisherphone, publisheremail FROM publishers",
+                sqlListAllBook = "SELECT booktitle, groupname, publishername, "
+                + "yearpublished, numberpages FROM books",
+                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers "
+                + "NATURAL JOIN writinggroups WHERE booktitle = ? AND groupname = ?",
                 sqlRemoveBook = "DELETE FROM books WHERE booktitle = ?",
-                sqlInsertBook = "INSERT INTO books(booktitle, groupname, publishername, yearpublished, numberpages) VALUES(?,?,?,?,?)",
-                sqlInsertPub = "INSERT INTO publishers(publishername, publisheraddress, publisherphone, publisheremail) VALUES(?,?,?,?)", 
-                sqlUpdatePub = "UPDATE publishers SET publishername = ?, publisheraddress = ?, publisherphone = ?, publisheremail = ? WHERE publishername = ?",
-                sqlUpdateBookPub = "UPDATE books SET publishername = ? WHERE publishername = ?",
-                sqlInsertWG = "INSERT INTO writinggroups(groupname, headwriter, yearformed, subject) VALUES(?,?,?,?)";
+                sqlInsertBook = "INSERT INTO books(booktitle, groupname, "
+                + "publishername, yearpublished, numberpages) VALUES(?,?,?,?,?)",
+                sqlInsertPub = "INSERT INTO publishers(publishername, "
+                + "publisheraddress, publisherphone, publisheremail) VALUES(?,?,?,?)", 
+                sqlUpdatePub = "UPDATE publishers SET publishername = ?, "
+                + "publisheraddress = ?, publisherphone = ?, publisheremail = ? "
+                + "WHERE publishername = ?",
+                sqlUpdateBookPub = "UPDATE books SET publishername = ? WHERE "
+                + "publishername = ?",
+                sqlInsertWG = "INSERT INTO writinggroups(groupname, headwriter, "
+                + "yearformed, subject) VALUES(?,?,?,?)";
         
 
             //end prepared statement strings
@@ -137,7 +148,6 @@ public class Database
             //STEP 4: Executing a query example
             System.out.println("Creating statement...");
             stmt = conn.createStatement(); /////creates statement object
-//            pstmt = conn.prepareCall(sql);
             
             try 
             {
