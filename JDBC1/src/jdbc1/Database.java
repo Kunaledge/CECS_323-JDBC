@@ -57,9 +57,9 @@ public class Database
     //The number indicates how wide to make the field.
     //The "s" denotes that it's a string.  All of our output in this test are
     //strings, but that won't always be the case.
-    String  dfListWG = "%-25s\n",
+    String  dfListWG = "%-25s%-25s%-25s%-25s\n",
             dfListPub = "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s\n",
-            dfListAllPub = "%-25s\n",
+            dfListAllPub = "%-25s%-25s%-25s%-25s\n",
             dfListAllBook = "%-25s%-25s%-25s%-25s%-25s\n",
             dfListBook = "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s\n";
     
@@ -97,11 +97,11 @@ public class Database
         
         //prepared statement strings
         
-        String  sqlListWritingGroup = "SELECT DISTINCT groupname FROM writinggroups", 
+        String  sqlListWritingGroup = "SELECT groupname, headwriter, yearformed, subject FROM writinggroups", 
                 sqlListPub = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE groupname = ?",
-                sqlListAllPub = "SELECT publishername FROM publishers",
-                sqlListAllBook = "SELECT booktitle, groupname, publishername, yearpublished, numberpages FROM books NATURAL JOIN publishers",
-                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE booktitle = ?",
+                sqlListAllPub = "SELECT publishername, publisheraddress, publisherphone, publisheremail FROM publishers",
+                sqlListAllBook = "SELECT booktitle, groupname, publishername, yearpublished, numberpages FROM books",
+                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE booktitle = ? AND groupname = ?",
                 sqlRemoveBook = "DELETE FROM books WHERE booktitle = ?",
                 sqlInsertBook = "INSERT INTO books(booktitle, groupname, publishername, yearpublished, numberpages) VALUES(?,?,?,?,?)",
                 sqlInsertPub = "INSERT INTO publishers(publishername, publisheraddress, publisherphone, publisheremail) VALUES(?,?,?,?)", 
@@ -111,17 +111,17 @@ public class Database
         
 
             //end prepared statement strings
-        PreparedStatement pstmtListWG;
-        PreparedStatement pstmtListPub;
-        PreparedStatement pstmtListAllPub;
-        PreparedStatement pstmtListAllBook;
-        PreparedStatement pstmtListBook;
-        PreparedStatement pstmtRemoveBook;
-        PreparedStatement pstmtInsertBook;
-        PreparedStatement pstmtInsertPub;
-        PreparedStatement pstmtUpdatePub;
-        PreparedStatement pstmtUpdateBookPub;
-        PreparedStatement pstmtInsertWG;
+        PreparedStatement pstmtListWG = null;
+        PreparedStatement pstmtListPub = null;
+        PreparedStatement pstmtListAllPub = null;
+        PreparedStatement pstmtListAllBook = null;
+        PreparedStatement pstmtListBook = null;
+        PreparedStatement pstmtRemoveBook = null;
+        PreparedStatement pstmtInsertBook = null;
+        PreparedStatement pstmtInsertPub = null;
+        PreparedStatement pstmtUpdatePub = null;
+        PreparedStatement pstmtUpdateBookPub = null;
+        PreparedStatement pstmtInsertWG = null;
 
         
         try 
@@ -164,15 +164,15 @@ public class Database
                             + "\n2. Add book to database"
                             + "\n3. Add and Update Publisher"
                             + "\n4. Remove book from database"
-                            + "\n9.Quit"
+                            + "\n9. Quit"
                             + "\nEnter number: ");
                     choice = scan.nextInt();
                     scan.skip("\n"); //prevents following input skipping
+                    System.out.println();
                     switch(choice)
                     {
                         case 1:
                             int listChoice;
-    //                        List list = new List();
 
                             do
                             {
@@ -182,32 +182,36 @@ public class Database
                                         + "\n3. All publishers"
                                         + "\n4. All titles"
                                         + "\n5. Book info"
-                                        + "\n9.Go back"
+                                        + "\n9. Go back"
                                         + "\nEnter choice: ");
                                 listChoice = scan.nextInt();
+                                scan.skip("\n"); //prevents following input skipping
                                 System.out.println();
-                                scan.skip("\n");
-
                                 switch(listChoice)
                                 {
                                     case 1:
-    //                                    list.allWritingGroups(this);
                                         rs = pstmtListWG.executeQuery();
-    //                                    displayFormat = "%-25s\n";
-                                        System.out.printf(dfListWG, "List of Writing Groups");
+                                        System.out.printf(dfListWG, 
+                                                "Writing Groups",
+                                                "Head Writer",
+                                                "Year Formed",
+                                                "Subject"
+                                        );
                                         while (rs.next())
                                         {
                                             System.out.printf(dfListWG, 
-                                                    dispNull(rs.getString(groupName)));
-                                            System.out.println();
+                                                    dispNull(rs.getString(groupName)),
+                                                    dispNull(rs.getString(headWriter)),
+                                                    dispNull(rs.getString(yearFormed)),
+                                                    dispNull(rs.getString(subject)));
                                         }
+                                        rs.close();
+                                        System.out.println();
                                         break;
                                     case 2:
-    //                                    list.selectGroup(this);
                                         System.out.print("Enter name of group: ");
                                         pstmtListPub.setString(1, scan.nextLine());
                                         rs = pstmtListPub.executeQuery();
-    //                                    displayFormat = "%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s%-25s\n";
                                         System.out.printf(dfListPub, 
                                                 "Name", 
                                                 "Address", 
@@ -223,7 +227,8 @@ public class Database
 
                                         while (rs.next())
                                         {
-                                            System.out.printf(dfListPub, rs.getString(publisherName),
+                                            System.out.printf(dfListPub, 
+                                                    dispNull(rs.getString(publisherName)),
                                                     dispNull(rs.getString(publisherAddress)),
                                                     dispNull(rs.getString(publisherPhone)),
                                                     dispNull(rs.getString(publisherEmail)),
@@ -236,25 +241,31 @@ public class Database
                                                     rs.getString(numberPages)
                                             );
                                         }
-
+                                        rs.close();
                                         System.out.println();
                                         break;
                                     case 3:
                                         rs = pstmtListAllPub.executeQuery();
-                                        System.out.printf(dfListAllPub, "List of Publishers");
+                                        System.out.printf(dfListAllPub,
+                                                "Publisher",
+                                                "Address",
+                                                "Phone",
+                                                "Email"
+                                        );
                                         while (rs.next())
                                         {
                                             System.out.printf(dfListAllPub, 
-                                                    dispNull(rs.getString("publishername"))
+                                                    dispNull(rs.getString(publisherName)), 
+                                                    dispNull(rs.getString(publisherAddress)), 
+                                                    dispNull(rs.getString(publisherPhone)), 
+                                                    dispNull(rs.getString(publisherEmail))
                                             );
                                         }
-
+                                        rs.close();
                                         System.out.println();
-    //                                    list.allPublishers(this);
                                         break;
                                     case 4:
                                         rs = pstmtListAllBook.executeQuery();
-    //                                    list.allTitles(this);
                                         System.out.printf(dfListAllBook, 
                                                 "List of Book Titles", 
                                                 "Writing Group",
@@ -273,12 +284,28 @@ public class Database
                                                     rs.getString(numberPages)                                                
                                             );
                                         }
-
+                                        rs.close();
                                         System.out.println();
                                         break;
                                     case 5:
                                         System.out.print("Enter book title: ");
-                                        pstmtListBook.setString(1, scan.nextLine());
+                                        if(!isValueStored("books", bookTitle, userInput = scan.nextLine()))
+                                        {
+                                            System.out.println("Error: Book title not found in database.");
+                                            break;
+                                        }
+                                        
+                                        pstmtListBook.setString(1, userInput);
+                                        
+                                        System.out.print("Enter writing group: ");
+                                        if(!isValueStored("books", groupName, userInput = scan.nextLine()))
+                                        {
+                                            System.out.println("Error: Book title by this group not found in database.");
+                                            break;
+                                        }
+                                        
+                                        pstmtListBook.setString(2, userInput);
+
                                         System.out.printf(dfListBook,
                                                 "Book Title", 
                                                 "Year Published", 
@@ -309,15 +336,13 @@ public class Database
                                                     dispNull(rs.getString(publisherEmail))
                                             );        
                                         }
-
+                                        rs.close();
                                         System.out.println();
                                 }
 
                             } while(listChoice != 9);
                             break;
                         case 2: //insert methods 
-//                        Insert ins = new Insert();
-//                        ins.book(this);
                             String PK = "bookTitle = '";
                             System.out.print("Enter Title: ");
                             pstmtInsertBook.setString(1, userInput = scan.nextLine());
@@ -361,6 +386,7 @@ public class Database
                             pstmtInsertBook.setString(4, scan.nextLine());
                             System.out.print("Enter Number of Pages: ");
                             pstmtInsertBook.setInt(5, scan.nextInt());
+                            System.out.println();
 
                             pstmtInsertWG.executeUpdate();
                             pstmtInsertPub.executeUpdate();
@@ -398,14 +424,14 @@ public class Database
                                 System.out.println("Publisher already in Database!");
                                 break;
                             }
+                            
+                            System.out.println();
 
                             pstmtUpdateBookPub.setString(1, userInput);
                             pstmtInsertPub.executeUpdate();
                             pstmtUpdateBookPub.executeUpdate();
                             break;
                         case 4:
-    //                        Remove rem = new Remove();
-    //                        rem.selectBook(this);
                             System.out.print("Enter to be removed book title: ");
                             userInput = scan.nextLine();
                             System.out.print("Enter writing group: ");
@@ -423,14 +449,12 @@ public class Database
                             else 
                             {
                                 System.out.println("Error: Something went wrong with title removal.");
-                            }                        }
-                            break;
-            
+                            }                  
+                            System.out.println();
+                    }            
                 } while(choice != 9);
                 
                 //clean up
-                if (!rs.isClosed())
-                    rs.close();
                 if(!stmt.isClosed())
                     stmt.close();
                 if(!conn.isClosed())
@@ -491,7 +515,7 @@ public class Database
         sql = "SELECT " + colName + " FROM " + tableName + " WHERE " 
                 + colName + " = '" + valueIn + "'";
         
-        System.out.println(sql);
+//        System.out.println(sql);
         
         rs = stmt.executeQuery(sql);
         
@@ -502,7 +526,7 @@ public class Database
     {
         sql = "SELECT * FROM " + tableName + " WHERE " + PKstr;
         
-        System.out.println(sql);
+//        System.out.println(sql);
         
         rs = stmt.executeQuery(sql);
         
