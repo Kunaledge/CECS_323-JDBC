@@ -46,8 +46,6 @@ public class Database
             subject = "subject";
             
             
-//    int numberPages, yearFormed;
-//    String publisherAddress, publisherPhone, publisherEmail;
     int choice;
     String userInput;
     
@@ -73,7 +71,7 @@ public class Database
         if (input == null || input.length() == 0)
             return "N/A";
         else
-            return input;
+            return outputCheck(input);
     }
     
     public void start()
@@ -81,48 +79,58 @@ public class Database
         //Prompt the user for the database name, and the credentials.
         //If your database has no credentials, you can update this code to
         //remove that from the connection string.
-//        System.out.print("Name of the database (not the user account): ");
-//        DBNAME = scan.nextLine();
-//        System.out.print("Database user name: ");
-//        USER = scan.nextLine();
-//        System.out.print("Database password: ");
-//        PASS = scan.nextLine();
+        System.out.print("Name of the database (not the user account): ");
+        DBNAME = scan.nextLine();
+        System.out.print("Database user name: ");
+        USER = scan.nextLine();
+        System.out.print("Database password: ");
+        PASS = scan.nextLine();
         //Constructing the database URL connection string
         
-        USER = "user1";
-        PASS = "password";
-        DBNAME = "JDBC";
+//        USER = "user1";
+//        PASS = "password";
+//        DBNAME = "JDBC";
         
         DB_URL = DB_URL + DBNAME + ";user=" + USER + ";password=" + PASS;
         
         //prepared statement strings
         
-        String  sqlListWritingGroup = "SELECT groupname, headwriter, yearformed, subject FROM writinggroups", 
-                sqlListPub = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE groupname = ?",
-                sqlListAllPub = "SELECT publishername, publisheraddress, publisherphone, publisheremail FROM publishers",
-                sqlListAllBook = "SELECT booktitle, groupname, publishername, yearpublished, numberpages FROM books",
-                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers NATURAL JOIN writinggroups WHERE booktitle = ? AND groupname = ?",
-                sqlRemoveBook = "DELETE FROM books WHERE booktitle = ?",
-                sqlInsertBook = "INSERT INTO books(booktitle, groupname, publishername, yearpublished, numberpages) VALUES(?,?,?,?,?)",
-                sqlInsertPub = "INSERT INTO publishers(publishername, publisheraddress, publisherphone, publisheremail) VALUES(?,?,?,?)", 
-                sqlUpdatePub = "UPDATE publishers SET publishername = ?, publisheraddress = ?, publisherphone = ?, publisheremail = ? WHERE publishername = ?",
-                sqlUpdateBookPub = "UPDATE books SET publishername = ? WHERE publishername = ?",
-                sqlInsertWG = "INSERT INTO writinggroups(groupname, headwriter, yearformed, subject) VALUES(?,?,?,?)";
+        String  sqlListWritingGroup = "SELECT groupname, headwriter, yearformed, "
+                + "subject FROM writinggroups ORDER BY groupname", 
+                sqlListPub = "SELECT * FROM books NATURAL JOIN publishers "
+                + "NATURAL JOIN writinggroups WHERE groupname = ?",
+                sqlListAllPub = "SELECT publishername, publisheraddress, "
+                + "publisherphone, publisheremail FROM publishers ORDER BY publishername",
+                sqlListAllBook = "SELECT booktitle, groupname, publishername, "
+                + "yearpublished, numberpages FROM books ORDER BY booktitle, groupname",
+                sqlListBook = "SELECT * FROM books NATURAL JOIN publishers "
+                + "NATURAL JOIN writinggroups WHERE booktitle = ? AND groupname = ?",
+                sqlRemoveBook = "DELETE FROM books WHERE booktitle = ? AND groupname = ?",
+                sqlInsertBook = "INSERT INTO books(booktitle, groupname, "
+                + "publishername, yearpublished, numberpages) VALUES(?,?,?,?,?)",
+                sqlInsertPub = "INSERT INTO publishers(publishername, "
+                + "publisheraddress, publisherphone, publisheremail) VALUES(?,?,?,?)", 
+                sqlUpdatePub = "UPDATE publishers SET publishername = ?, "
+                + "publisheraddress = ?, publisherphone = ?, publisheremail = ? "
+                + "WHERE publishername = ?",
+                sqlUpdateBookPub = "UPDATE books SET publishername = ? WHERE "
+                + "publishername = ?",
+                sqlInsertWG = "INSERT INTO writinggroups(groupname, headwriter, "
+                + "yearformed, subject) VALUES(?,?,?,?)";
         
 
             //end prepared statement strings
-        PreparedStatement pstmtListWG = null;
-        PreparedStatement pstmtListPub = null;
-        PreparedStatement pstmtListAllPub = null;
-        PreparedStatement pstmtListAllBook = null;
-        PreparedStatement pstmtListBook = null;
-        PreparedStatement pstmtRemoveBook = null;
-        PreparedStatement pstmtInsertBook = null;
-        PreparedStatement pstmtInsertPub = null;
-        PreparedStatement pstmtUpdatePub = null;
-        PreparedStatement pstmtUpdateBookPub = null;
-        PreparedStatement pstmtInsertWG = null;
-
+        PreparedStatement pstmtListWG;
+        PreparedStatement pstmtListPub;
+        PreparedStatement pstmtListAllPub;
+        PreparedStatement pstmtListAllBook;
+        PreparedStatement pstmtListBook;
+        PreparedStatement pstmtRemoveBook;
+        PreparedStatement pstmtInsertBook;
+        PreparedStatement pstmtInsertPub;
+        PreparedStatement pstmtUpdatePub;
+        PreparedStatement pstmtUpdateBookPub;
+        PreparedStatement pstmtInsertWG;
         
         try 
         {
@@ -135,9 +143,8 @@ public class Database
             
             conn = DriverManager.getConnection(DB_URL);
             //STEP 4: Executing a query example
-            System.out.println("Creating statement...");
+//            System.out.println("Creating statement...");
             stmt = conn.createStatement(); /////creates statement object
-//            pstmt = conn.prepareCall(sql);
             
             try 
             {
@@ -159,302 +166,371 @@ public class Database
                  
                 do
                 {
-                    System.out.print("Enter choice:"
-                            + "\n1. Look up"
-                            + "\n2. Add book to database"
-                            + "\n3. Add and Update Publisher"
-                            + "\n4. Remove book from database"
-                            + "\n9. Quit"
-                            + "\nEnter number: ");
-                    choice = scan.nextInt();
-                    scan.skip("\n"); //prevents following input skipping
-                    System.out.println();
-                    switch(choice)
+                    try
                     {
-                        case 1:
-                            int listChoice;
 
-                            do
-                            {
-                                System.out.print("Enter look up choice:"
-                                        + "\n1. All writing groups"
-                                        + "\n2. Group info"
-                                        + "\n3. All publishers"
-                                        + "\n4. All titles"
-                                        + "\n5. Book info"
-                                        + "\n9. Go back"
-                                        + "\nEnter choice: ");
-                                listChoice = scan.nextInt();
-                                scan.skip("\n"); //prevents following input skipping
-                                System.out.println();
-                                switch(listChoice)
+                        System.out.print("Enter choice:"
+                                + "\n1. Look up"
+                                + "\n2. Add book to database"
+                                + "\n3. Add and Update Publisher"
+                                + "\n4. Remove book from database"
+                                + "\n9. Quit"
+                                + "\nEnter number: ");
+                        choice = scan.nextInt();
+                        scan.skip("\n"); //prevents following input skipping
+                        System.out.println();
+                        switch(choice)
+                        {
+                            case 1:
+                                int listChoice;
+
+                                do
                                 {
-                                    case 1:
-                                        rs = pstmtListWG.executeQuery();
-                                        System.out.printf(dfListWG, 
-                                                "Writing Groups",
-                                                "Head Writer",
-                                                "Year Formed",
-                                                "Subject"
-                                        );
-                                        while (rs.next())
-                                        {
+                                    System.out.print("Enter look up choice:"
+                                            + "\n1. All writing groups"
+                                            + "\n2. Group info"
+                                            + "\n3. All publishers"
+                                            + "\n4. All titles"
+                                            + "\n5. Book info"
+                                            + "\n9. Go back"
+                                            + "\nEnter choice: ");
+                                    listChoice = scan.nextInt();
+                                    scan.skip("\n"); //prevents following input skipping
+                                    System.out.println();
+                                    switch(listChoice)
+                                    {
+                                        case 1://LIST ALL WRITING GROUPS
+                                            rs = pstmtListWG.executeQuery();
                                             System.out.printf(dfListWG, 
-                                                    dispNull(rs.getString(groupName)),
-                                                    dispNull(rs.getString(headWriter)),
-                                                    dispNull(rs.getString(yearFormed)),
-                                                    dispNull(rs.getString(subject)));
-                                        }
-                                        rs.close();
-                                        System.out.println();
-                                        break;
-                                    case 2:
-                                        System.out.print("Enter name of group: ");
-                                        pstmtListPub.setString(1, scan.nextLine());
-                                        rs = pstmtListPub.executeQuery();
-                                        System.out.printf(dfListPub, 
-                                                "Name", 
-                                                "Address", 
-                                                "Phone", 
-                                                "Email",
-                                                "Group Name",
-                                                "Head Writer", 
-                                                "Year Formed",
-                                                "Subject",
-                                                "Book Title", 
-                                                "Year Published", 
-                                                "Number of Pages");
-
-                                        while (rs.next())
-                                        {
+                                                    "Writing Groups",
+                                                    "Head Writer",
+                                                    "Year Formed",
+                                                    "Subject"
+                                            );
+                                            while (rs.next())
+                                            {
+                                                System.out.printf(dfListWG, 
+                                                        dispNull(rs.getString(groupName)),
+                                                        dispNull(rs.getString(headWriter)),
+                                                        dispNull(rs.getString(yearFormed)),
+                                                        dispNull(rs.getString(subject)));
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                            break;
+                                        case 2://LIST SPECIFIED WRITING GROUP
+                                            System.out.print("Enter name of group: ");
+                                            pstmtListPub.setString(1, inputCheck(scan.nextLine()));
+                                            rs = pstmtListPub.executeQuery();
                                             System.out.printf(dfListPub, 
-                                                    dispNull(rs.getString(publisherName)),
-                                                    dispNull(rs.getString(publisherAddress)),
-                                                    dispNull(rs.getString(publisherPhone)),
-                                                    dispNull(rs.getString(publisherEmail)),
-                                                    dispNull(rs.getString(groupName)),
-                                                    dispNull(rs.getString(headWriter)),
-                                                    dispNull(rs.getString(yearFormed)),
-                                                    dispNull(rs.getString(subject)),
-                                                    dispNull(rs.getString(bookTitle)),
-                                                    dispNull(rs.getString(yearPublished)),
-                                                    rs.getString(numberPages)
-                                            );
-                                        }
-                                        rs.close();
-                                        System.out.println();
-                                        break;
-                                    case 3:
-                                        rs = pstmtListAllPub.executeQuery();
-                                        System.out.printf(dfListAllPub,
-                                                "Publisher",
-                                                "Address",
-                                                "Phone",
-                                                "Email"
-                                        );
-                                        while (rs.next())
-                                        {
-                                            System.out.printf(dfListAllPub, 
-                                                    dispNull(rs.getString(publisherName)), 
-                                                    dispNull(rs.getString(publisherAddress)), 
-                                                    dispNull(rs.getString(publisherPhone)), 
-                                                    dispNull(rs.getString(publisherEmail))
-                                            );
-                                        }
-                                        rs.close();
-                                        System.out.println();
-                                        break;
-                                    case 4:
-                                        rs = pstmtListAllBook.executeQuery();
-                                        System.out.printf(dfListAllBook, 
-                                                "List of Book Titles", 
-                                                "Writing Group",
-                                                "Publisher",
-                                                "Year Published",
-                                                "Number of Pages"
-                                        );
+                                                    "Name", 
+                                                    "Address", 
+                                                    "Phone", 
+                                                    "Email",
+                                                    "Group Name",
+                                                    "Head Writer", 
+                                                    "Year Formed",
+                                                    "Subject",
+                                                    "Book Title", 
+                                                    "Year Published", 
+                                                    "Number of Pages");
 
-                                        while (rs.next())
-                                        {
+                                            while (rs.next())
+                                            {
+                                                System.out.printf(dfListPub, 
+                                                        dispNull(rs.getString(publisherName)),
+                                                        dispNull(rs.getString(publisherAddress)),
+                                                        dispNull(rs.getString(publisherPhone)),
+                                                        dispNull(rs.getString(publisherEmail)),
+                                                        dispNull(rs.getString(groupName)),
+                                                        dispNull(rs.getString(headWriter)),
+                                                        dispNull(rs.getString(yearFormed)),
+                                                        dispNull(rs.getString(subject)),
+                                                        dispNull(rs.getString(bookTitle)),
+                                                        dispNull(rs.getString(yearPublished)),
+                                                        rs.getString(numberPages)
+                                                );
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                            break;
+                                        case 3://LIST ALL PUBLISHERS
+                                            rs = pstmtListAllPub.executeQuery();
+                                            System.out.printf(dfListAllPub,
+                                                    "Publisher",
+                                                    "Address",
+                                                    "Phone",
+                                                    "Email"
+                                            );
+                                            while (rs.next())
+                                            {
+                                                System.out.printf(dfListAllPub, 
+                                                        dispNull(rs.getString(publisherName)), 
+                                                        dispNull(rs.getString(publisherAddress)), 
+                                                        dispNull(rs.getString(publisherPhone)), 
+                                                        dispNull(rs.getString(publisherEmail))
+                                                );
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                            break;
+                                        case 4://LIST ALL BOOKS
+                                            rs = pstmtListAllBook.executeQuery();
                                             System.out.printf(dfListAllBook, 
-                                                    dispNull(rs.getString(bookTitle)), 
-                                                    dispNull(rs.getString(groupName)),
-                                                    dispNull(rs.getString(publisherName)),
-                                                    dispNull(rs.getString(yearPublished)),
-                                                    rs.getString(numberPages)                                                
+                                                    "List of Book Titles", 
+                                                    "Writing Group",
+                                                    "Publisher",
+                                                    "Year Published",
+                                                    "Number of Pages"
                                             );
-                                        }
-                                        rs.close();
-                                        System.out.println();
-                                        break;
-                                    case 5:
-                                        System.out.print("Enter book title: ");
-                                        if(!isValueStored("books", bookTitle, userInput = scan.nextLine()))
-                                        {
-                                            System.out.println("Error: Book title not found in database.");
-                                            break;
-                                        }
-                                        
-                                        pstmtListBook.setString(1, userInput);
-                                        
-                                        System.out.print("Enter writing group: ");
-                                        if(!isValueStored("books", groupName, userInput = scan.nextLine()))
-                                        {
-                                            System.out.println("Error: Book title by this group not found in database.");
-                                            break;
-                                        }
-                                        
-                                        pstmtListBook.setString(2, userInput);
 
-                                        System.out.printf(dfListBook,
-                                                "Book Title", 
-                                                "Year Published", 
-                                                "Number of Pages",
-                                                "Writing Group",
-                                                "Head Writer",
-                                                "Year Formed",
-                                                "Subject",
-                                                "Publisher Name",
-                                                "Publisher Address",
-                                                "Publisher Phone",
-                                                "Publisher Email"
-                                        );
-                                        rs = pstmtListBook.executeQuery();
-                                        while(rs.next())
-                                        {
-                                            System.out.printf(dfListBook, 
-                                                    dispNull(rs.getString(bookTitle)),
-                                                    dispNull(rs.getString(yearPublished)),
-                                                    rs.getInt(numberPages),
-                                                    dispNull(rs.getString(groupName)),
-                                                    dispNull(rs.getString(headWriter)),
-                                                    dispNull(rs.getString(yearFormed)),
-                                                    dispNull(rs.getString(subject)),
-                                                    dispNull(rs.getString(publisherName)),
-                                                    dispNull(rs.getString(publisherAddress)),
-                                                    dispNull(rs.getString(publisherPhone)),
-                                                    dispNull(rs.getString(publisherEmail))
-                                            );        
-                                        }
-                                        rs.close();
-                                        System.out.println();
+                                            while (rs.next())
+                                            {
+                                                System.out.printf(dfListAllBook, 
+                                                        dispNull(rs.getString(bookTitle)), 
+                                                        dispNull(rs.getString(groupName)),
+                                                        dispNull(rs.getString(publisherName)),
+                                                        dispNull(rs.getString(yearPublished)),
+                                                        rs.getString(numberPages)                                                
+                                                );
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                            break;
+                                        case 5://LIST SPECIFIED BOOK
+                                            System.out.print("Enter book title: ");
+                                            if(!isValueStored("books", bookTitle, userInput = inputCheck(scan.nextLine())))
+                                            {
+                                                System.out.println("Error: Book title not found in database.");
+                                                break;
+                                            }
+
+                                            pstmtListBook.setString(1, userInput);
+
+                                            System.out.print("Enter writing group: ");
+                                            if(!isValueStored("books", groupName, userInput = inputCheck(scan.nextLine())))
+                                            {
+                                                System.out.println("Error: Book title by this group not found in database.");
+                                                break;
+                                            }
+
+                                            pstmtListBook.setString(2, userInput);
+
+                                            System.out.printf(dfListBook,
+                                                    "Book Title", 
+                                                    "Year Published", 
+                                                    "Number of Pages",
+                                                    "Writing Group",
+                                                    "Head Writer",
+                                                    "Year Formed",
+                                                    "Subject",
+                                                    "Publisher Name",
+                                                    "Publisher Address",
+                                                    "Publisher Phone",
+                                                    "Publisher Email"
+                                            );
+                                            rs = pstmtListBook.executeQuery();
+                                            while(rs.next())
+                                            {
+                                                System.out.printf(dfListBook, 
+                                                        dispNull(rs.getString(bookTitle)),
+                                                        dispNull(rs.getString(yearPublished)),
+                                                        rs.getInt(numberPages),
+                                                        dispNull(rs.getString(groupName)),
+                                                        dispNull(rs.getString(headWriter)),
+                                                        dispNull(rs.getString(yearFormed)),
+                                                        dispNull(rs.getString(subject)),
+                                                        dispNull(rs.getString(publisherName)),
+                                                        dispNull(rs.getString(publisherAddress)),
+                                                        dispNull(rs.getString(publisherPhone)),
+                                                        dispNull(rs.getString(publisherEmail))
+                                                );        
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                    }
+
+                                } while(listChoice != 9);
+                                break;
+                            case 2: //INSERT BOOK
+                                String PK = "bookTitle = '";
+                                System.out.print("Enter Title: ");
+                                pstmtInsertBook.setString(1, userInput = inputCheck(scan.nextLine()));
+                                PK += userInput + "' AND groupName = '";
+                                System.out.print("Writing Group: ");
+                                pstmtInsertBook.setString(2, userInput = inputCheck(scan.nextLine()));
+                                PK += userInput + "'";
+
+                                if (isPK("books", PK))
+                                {
+                                    System.out.println("Book already in database!");
+                                    break;
                                 }
 
-                            } while(listChoice != 9);
-                            break;
-                        case 2: //insert methods 
-                            String PK = "bookTitle = '";
-                            System.out.print("Enter Title: ");
-                            pstmtInsertBook.setString(1, userInput = scan.nextLine());
-                            PK += userInput + "' AND groupName = '";
-                            System.out.print("Writing Group: ");
-                            pstmtInsertBook.setString(2, userInput = scan.nextLine());
-                            PK += userInput + "'";
+                                if (!isValueStored("writinggroups", groupName, userInput))
+                                {
+                                    pstmtInsertWG.setString(1, userInput);
 
-                            if (isPK("books", PK))
-                            {
-                                System.out.println("Book already in database!");
+                                    System.out.print("Group: Head Writer: ");
+                                    pstmtInsertWG.setString(2, inputCheck(scan.nextLine()));
+                                    do
+                                    {
+                                        System.out.print("Group: Year Formed: ");
+                                        String temp = scan.nextLine();
+                                        if(temp.matches("^[0-9]+$"))
+                                        {
+                                            pstmtInsertWG.setInt(3, Integer.parseInt(temp)); //crash if nonnumerical char is entered                                    
+                                            break;                                            
+                                        }
+                                        else
+                                        {
+                                            System.out.println("Error: Enter Only Numbers (1234 format).");
+                                        }
+                                    }while (true);
+
+                                    System.out.print("Group: Subject: ");
+                                    pstmtInsertWG.setString(4, inputCheck(scan.nextLine()));
+
+                                    pstmtInsertWG.executeUpdate();
+                                }
+
+                                System.out.print("Publisher Name: ");
+                                userInput = inputCheck(scan.nextLine());
+                                pstmtInsertBook.setString(3, userInput);
+
+                                if (!isValueStored("publishers", publisherName, userInput))
+                                {
+                                    pstmtInsertPub.setString(1, userInput);
+                                    System.out.print("Publisher: Address: ");
+                                    pstmtInsertPub.setString(2, inputCheck(scan.nextLine()));
+                                    System.out.print("Publisher: Phone: ");
+                                    pstmtInsertPub.setString(3, inputCheck(scan.nextLine()));
+                                    System.out.print("Publisher: Email: ");
+                                    pstmtInsertPub.setString(4, inputCheck(scan.nextLine()));
+                                    pstmtInsertPub.executeUpdate();
+                                }
+                                
+                                do
+                                {
+                                    System.out.print("Enter Year Published: ");
+                                    String temp = scan.nextLine();
+                                    if(temp.matches("^[0-9]+$"))
+                                    {
+                                        pstmtInsertBook.setString(4, temp); //crash if nonnumerical char is entered                                    
+                                        break;                                            
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Error: Enter Only Numbers (1234 format).");
+                                    }
+                                }while (true);
+                                
+                                do
+                                {
+                                    System.out.print("Enter Number of Pages: ");
+                                    String temp = scan.nextLine();
+                                    if(temp.matches("^[0-9]+$"))
+                                    {
+                                        pstmtInsertBook.setInt(5, Integer.parseInt(temp)); //crash if nonnumerical char is entered                                    
+                                        break;                                            
+                                    }
+                                    else
+                                    {
+                                        System.out.println("Error: Enter Only Numbers (1234 format).");
+                                    }
+                                }while (true);
+                                System.out.println();
+                                
+                                pstmtInsertBook.executeUpdate();                      
+
                                 break;
-                            }
+                            case 3://REPLACE PREVIOUS PUBLISHER WITH NEW PUBLISHER                          
+                                System.out.print("Name of publisher to be replaced: ");
 
-                            if (!isValueStored("writinggroups", groupName, userInput))
-                            {
-                                pstmtInsertWG.setString(1, userInput);
-                                System.out.print("Group: Head Writer: ");
-                                pstmtInsertWG.setString(2, scan.nextLine());
-                                System.out.print("Group: Year Formed: ");
-                                pstmtInsertWG.setString(3, scan.nextLine());
-                                System.out.print("Group: Subject: ");
-                                pstmtInsertWG.setString(4, scan.nextLine());
-                            }
+                                if (!isValueStored("publishers", publisherName, userInput = inputCheck(scan.nextLine())))
+                                {
+                                    System.out.println(userInput);
+                                    System.out.println("Publisher not found!");
+                                    break;
+                                }
 
-                            System.out.print("Publisher Name: ");
-                            userInput = scan.nextLine();
-                            pstmtInsertBook.setString(3, userInput);
+                                pstmtUpdateBookPub.setString(2, userInput);
 
-                            if (!isValueStored("publishers", publisherName, userInput))
-                            {
-                                pstmtInsertPub.setString(1, userInput);
-                                System.out.print("Publisher: Address: ");
-                                pstmtInsertPub.setString(2, scan.nextLine());
-                                System.out.print("Publisher: Phone: ");
-                                pstmtInsertPub.setString(3, scan.nextLine());
-                                System.out.print("Publisher: Email: ");
-                                pstmtInsertPub.setString(4, scan.nextLine());
-                            }
-                            System.out.print("Enter Year Published: ");
-                            pstmtInsertBook.setString(4, scan.nextLine());
-                            System.out.print("Enter Number of Pages: ");
-                            pstmtInsertBook.setInt(5, scan.nextInt());
-                            System.out.println();
+                                System.out.print("Enter updated publisher name: ");
+                                userInput = inputCheck(scan.nextLine());
+                                pstmtInsertBook.setString(3, userInput);
 
-                            pstmtInsertWG.executeUpdate();
-                            pstmtInsertPub.executeUpdate();
-                            pstmtInsertBook.executeUpdate();                      
+                                if (!isValueStored("publishers", publisherName, userInput))
+                                {
+                                    pstmtInsertPub.setString(1, userInput);
+                                    System.out.print("Address: ");
+                                    pstmtInsertPub.setString(2, inputCheck(scan.nextLine()));
+                                    System.out.print("Phone: ");
+                                    pstmtInsertPub.setString(3, inputCheck(scan.nextLine()));
+                                    System.out.print("Email: ");
+                                    pstmtInsertPub.setString(4, inputCheck(scan.nextLine()));
+                                }
+                                else
+                                {
+                                    System.out.println("Publisher already in Database!");
+                                    break;
+                                }
 
-                            break;
-                        case 3:                                        
-                            System.out.print("Name of publisher to be replaced: ");
+                                System.out.println();
 
-                            if (!isValueStored("publishers", publisherName, userInput = scan.nextLine()))
-                            {
-                                System.out.println(userInput);
-                                System.out.println("Publisher not found!");
+                                pstmtUpdateBookPub.setString(1, userInput);
+                                pstmtInsertPub.executeUpdate();
+                                pstmtUpdateBookPub.executeUpdate();
                                 break;
-                            }
+                            case 4://REMOVE SPECIFIED BOOK
+                                System.out.print("Enter to be removed book title: ");
+                                userInput = inputCheck(scan.nextLine());
+                                if(!isValueStored("books", bookTitle, userInput))
+                                {
+                                    System.out.println("Book title '" + userInput 
+                                            + "' not found in database.");
+                                    break;
+                                }
+                                pstmtRemoveBook.setString(1, userInput);
+                                
+                                System.out.print("Enter writing group: ");
+                                String tempInput = "booktitle = '" + userInput 
+                                        + "' AND groupname = '" 
+                                        + (userInput = inputCheck(scan.nextLine())) 
+                                        + "'";
+                                if (!isPK("books", tempInput))
+                                {
+                                    System.out.println("Title by this writing group not found!");
+                                    break;
+                                }
+                                pstmtRemoveBook.setString(2, userInput);
 
-                            pstmtUpdateBookPub.setString(2, userInput);
-
-                            System.out.print("Enter updated publisher name: ");
-                            userInput = scan.nextLine();
-                            pstmtInsertBook.setString(3, userInput);
-
-                            if (!isValueStored("publishers", publisherName, userInput))
-                            {
-                                pstmtInsertPub.setString(1, userInput);
-                                System.out.print("Address: ");
-                                pstmtInsertPub.setString(2, scan.nextLine());
-                                System.out.print("Phone: ");
-                                pstmtInsertPub.setString(3, scan.nextLine());
-                                System.out.print("Email: ");
-                                pstmtInsertPub.setString(4, scan.nextLine());
-                            }
-                            else
-                            {
-                                System.out.println("Publisher already in Database!");
-                                break;
-                            }
-                            
-                            System.out.println();
-
-                            pstmtUpdateBookPub.setString(1, userInput);
-                            pstmtInsertPub.executeUpdate();
-                            pstmtUpdateBookPub.executeUpdate();
-                            break;
-                        case 4:
-                            System.out.print("Enter to be removed book title: ");
-                            userInput = scan.nextLine();
-                            System.out.print("Enter writing group: ");
-                            String tempInput = "booktitle = '" + userInput + "' AND groupname = '" + scan.nextLine() + "'";
-                            if (!isPK("books", tempInput))
-                            {
-                                System.out.println("Title by this writing group not found!");
-                                break;
-                            }
-
-                            if(0 < pstmtRemoveBook.executeUpdate())
-                            {
-                                System.out.println("Title successfully removed from database.");
-                            }
-                            else 
-                            {
-                                System.out.println("Error: Something went wrong with title removal.");
-                            }                  
-                            System.out.println();
-                    }            
+                                if(0 < pstmtRemoveBook.executeUpdate())
+                                {
+                                    System.out.println("Title successfully removed from database.");
+                                }
+                                else 
+                                {
+                                    System.out.println("Error: Something went wrong with title removal.");
+                                }                  
+                                System.out.println();
+                        }
+                    }catch(SQLDataException de) //CATCH DATA INPUT ERROR, SUCH AS ALPHA CHARS TO INT
+                    {
+                        System.out.print("Something was wrong with the data that was entered.("
+                                + de + ")\nPress enter to continue: ");
+                        scan.nextLine();
+                    }catch(SQLException e)
+                    {
+                        System.out.print("Something was wrong with the data that was entered.("
+                                + e + ")\nPress enter to continue: ");
+                        scan.nextLine();
+                    }
+                    
                 } while(choice != 9);
                 
                 //clean up
+                scan.close();
                 if(!stmt.isClosed())
                     stmt.close();
                 if(!conn.isClosed())
@@ -516,7 +592,7 @@ public class Database
                 + colName + " = '" + valueIn + "'";
         
 //        System.out.println(sql);
-        
+
         rs = stmt.executeQuery(sql);
         
         return rs.next();
@@ -531,6 +607,34 @@ public class Database
         rs = stmt.executeQuery(sql);
         
         return rs.next();
+    }
+    
+    public static String inputCheck(String input)
+    {
+        //check for varchar length
+        if(input.length() > 50)
+        {
+            input = input.substring(0, 49);
+        }
+        //insert apostrophe escape
+        return apostropheCheckIn(input);
+    }
+    
+    public static String apostropheCheckIn(String input)
+    {              
+        return input.replace("'", "''");
+    }
+    
+    public static String outputCheck(String input)
+    {
+        if(input.length() > 25)
+            input = input.substring(0, 24);
+        return apostropheCheckOut(input);
+    }
+    
+    public static String apostropheCheckOut(String input)
+    {
+        return input.replace("''", "'");
     }
     
 }
