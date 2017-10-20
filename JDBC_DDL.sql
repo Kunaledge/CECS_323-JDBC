@@ -2,7 +2,7 @@ CREATE TABLE WritingGroups
 (
     groupName           VARCHAR(50)     NOT NULL,
     headWriter          VARCHAR(50),
-    yearFormed          INT,
+    yearFormed          VARCHAR(4),
     subject             VARCHAR(50),
     CONSTRAINT  writingGroup_PK PRIMARY KEY(groupName) 
 );
@@ -12,7 +12,7 @@ CREATE TABLE Publishers
     publisherName       VARCHAR(50)     NOT NULL,
     publisherAddress    VARCHAR(60),
     publisherPhone      VARCHAR(12),
-    publisherEmail      VARCHAR(50),
+    publisherEmail      VARCHAR(100),
     CONSTRAINT  publishers_PK PRIMARY KEY(publisherName) 
 );
 
