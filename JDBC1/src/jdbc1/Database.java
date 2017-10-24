@@ -99,6 +99,8 @@ public class Database
                 + "subject FROM writinggroups ORDER BY groupname", 
                 sqlListPub = "SELECT * FROM books NATURAL JOIN publishers "
                 + "NATURAL JOIN writinggroups WHERE groupname = ?",
+                sqlListSpecificPub = "SELECT * FROM publishers NATURAL JOIN books "
+                + "NATURAL JOIN writinggroups WHERE publishername = ?",
                 sqlListAllPub = "SELECT publishername, publisheraddress, "
                 + "publisherphone, publisheremail FROM publishers ORDER BY publishername",
                 sqlListAllBook = "SELECT booktitle, groupname, publishername, "
@@ -123,6 +125,7 @@ public class Database
         PreparedStatement pstmtListWG;
         PreparedStatement pstmtListPub;
         PreparedStatement pstmtListAllPub;
+        PreparedStatement pstmtListSpecificPub;
         PreparedStatement pstmtListAllBook;
         PreparedStatement pstmtListBook;
         PreparedStatement pstmtRemoveBook;
@@ -153,6 +156,7 @@ public class Database
                 pstmtListWG = conn.prepareStatement(sqlListWritingGroup);
                 pstmtListPub = conn.prepareStatement(sqlListPub);
                 pstmtListAllPub = conn.prepareStatement(sqlListAllPub);
+                pstmtListSpecificPub = conn.prepareStatement(sqlListSpecificPub);
                 pstmtListAllBook = conn.prepareStatement(sqlListAllBook);
                 pstmtListBook = conn.prepareStatement(sqlListBook);
                 pstmtRemoveBook = conn.prepareStatement(sqlRemoveBook);
@@ -190,8 +194,9 @@ public class Database
                                             + "\n1. All writing groups"
                                             + "\n2. Group info"
                                             + "\n3. All publishers"
-                                            + "\n4. All titles"
-                                            + "\n5. Book info"
+                                            + "\n4. Publisher info"
+                                            + "\n5. All titles"
+                                            + "\n6. Book info"
                                             + "\n9. Go back"
                                             + "\nEnter choice: ");
                                     listChoice = scan.nextInt();
@@ -274,7 +279,42 @@ public class Database
                                             rs.close();
                                             System.out.println();
                                             break;
-                                        case 4://LIST ALL BOOKS
+                                        case 4://LIST SPECIFIED PUBLISHERS
+                                            System.out.print("Enter name of Publisher: ");
+                                            pstmtListSpecificPub.setString(1, inputCheck(scan.nextLine()));
+                                            rs = pstmtListSpecificPub.executeQuery();
+                                            System.out.printf(dfListPub, 
+                                                    "Name", 
+                                                    "Address", 
+                                                    "Phone", 
+                                                    "Email",
+                                                    "Group Name",
+                                                    "Head Writer", 
+                                                    "Year Formed",
+                                                    "Subject",
+                                                    "Book Title", 
+                                                    "Year Published", 
+                                                    "Number of Pages");
+                                            while (rs.next())
+                                            {
+                                                System.out.printf(dfListPub, 
+                                                        dispNull(rs.getString(publisherName)),
+                                                        dispNull(rs.getString(publisherAddress)),
+                                                        dispNull(rs.getString(publisherPhone)),
+                                                        dispNull(rs.getString(publisherEmail)),
+                                                        dispNull(rs.getString(groupName)),
+                                                        dispNull(rs.getString(headWriter)),
+                                                        dispNull(rs.getString(yearFormed)),
+                                                        dispNull(rs.getString(subject)),
+                                                        dispNull(rs.getString(bookTitle)),
+                                                        dispNull(rs.getString(yearPublished)),
+                                                        rs.getString(numberPages)
+                                                );
+                                            }
+                                            rs.close();
+                                            System.out.println();
+                                            break;
+                                        case 5://LIST ALL BOOKS
                                             rs = pstmtListAllBook.executeQuery();
                                             System.out.printf(dfListAllBook, 
                                                     "List of Book Titles", 
@@ -297,7 +337,7 @@ public class Database
                                             rs.close();
                                             System.out.println();
                                             break;
-                                        case 5://LIST SPECIFIED BOOK
+                                        case 6://LIST SPECIFIED BOOK
                                             System.out.print("Enter book title: ");
                                             if(!isValueStored("books", bookTitle, userInput = inputCheck(scan.nextLine())))
                                             {
